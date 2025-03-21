@@ -178,15 +178,3 @@ progress {
     margin: 0;
     padding: 0;
 }
-
-.download-icon {
-    margin-left: 10px;
-    display: flex;
-    align-items: center;
-}
-
-.download-icon svg {
-    width: 24px;
-    height: 24px;
-    color: #3498db;
-}
