@@ -22,6 +22,7 @@ const laceOpacitySlider = document.getElementById('lace-opacity');
 const laceOpacityValueEl = document.getElementById('lace-opacity-value');
 const previewCanvas = document.getElementById('preview-canvas');
 const processButton = document.getElementById('process-button');
+const downloadAllCheckbox = document.getElementById('download-all-checkbox');
 const progressContainer = document.querySelector('.progress-container');
 const progressBar = document.getElementById('progress-bar');
 const progressText = document.getElementById('progress-text');
@@ -238,6 +239,11 @@ function processImages() {
                 // Check if all processing is complete
                 if (processed === selectedImages.length) {
                     progressText.textContent = `Completed processing ${selectedImages.length} images!`;
+                    
+                    // If download all is checked, trigger downloads
+                    if (downloadAllCheckbox && downloadAllCheckbox.checked) {
+                        downloadAllProcessedImages();
+                    }
                 }
             };
             img.src = event.target.result;
@@ -319,3 +325,65 @@ function addImageToGallery(dataUrl, fileName) {
     container.appendChild(downloadBtn);
     gallery.appendChild(container);
 }
+
+// Function to create and download a ZIP file with all processed images
+function downloadAllProcessedImages() {
+    // Check if required libraries are loaded
+    if (typeof JSZip === 'undefined' || typeof saveAs === 'undefined') {
+        console.error('JSZip or FileSaver libraries not loaded.');
+        alert('ZIP functionality requires JSZip and FileSaver libraries. Please make sure they are loaded.');
+        return;
+    }
+
+    if (processedImages.length === 0) {
+        console.log('No images to download');
+        return;
+    }
+    
+    console.log(`Creating ZIP file with ${processedImages.length} images`);
+    
+    // Show a message while creating ZIP
+    progressText.textContent = `Creating ZIP archive with ${processedImages.length} images...`;
+    
+    // Create a new JSZip instance
+    const zip = new JSZip();
+    
+    // Add each image to the ZIP file
+    processedImages.forEach((image, index) => {
+        // Convert base64 data URL to binary data
+        // First, remove the data URL prefix
+        const imageData = image.dataUrl.replace(/^data:image\/(jpeg|jpg);base64,/, "");
+        
+        // Set filename for the image in the ZIP
+        const filename = image.name.replace(/\.[^/.]+$/, "") + '_processed.jpg';
+        
+        // Add file to ZIP
+        zip.file(filename, imageData, {base64: true});
+    });
+    
+    // Generate the ZIP file
+    zip.generateAsync({type:"blob"})
+        .then(function(content) {
+            // Generate timestamp for unique zip name
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            
+            // Create a download link for the ZIP
+            saveAs(content, `processed_images_${timestamp}.zip`);
+            
+            // Update the UI
+            progressText.textContent = `Completed! ZIP file with ${processedImages.length} images downloaded.`;
+        })
+        .catch(function(error) {
+            console.error('Error creating ZIP file:', error);
+            progressText.textContent = `Error creating ZIP file. See console for details.`;
+        });
+}
+
+// Add a listener for the downloadAllCheckbox if it exists
+document.addEventListener('DOMContentLoaded', function() {
+    if (downloadAllCheckbox) {
+        downloadAllCheckbox.addEventListener('change', function() {
+            console.log('Download checkbox changed to:', this.checked);
+        });
+    }
+});

@@ -124,3 +124,69 @@ progress {
     opacity: 0;
     cursor: pointer;
 }
+
+/* Improved checkbox styling */
+.download-option {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    padding: 10px;
+}
+
+.download-option input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    background-color: #1e1e1e;
+    border: 2px solid #3498db;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    margin-right: 10px;
+}
+
+.download-option input[type="checkbox"]:checked {
+    background-color: #3498db;
+}
+
+.download-option input[type="checkbox"]::after {
+    content: '✓';
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.2s ease;
+}
+
+.download-option input[type="checkbox"]:checked::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.download-option label {
+    font-family: 'Trebuchet MS', sans-serif;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 16px;
+    color: #e0e0e0;
+    line-height: 28px;
+    margin: 0;
+    padding: 0;
+}
+
+.download-icon {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.download-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #3498db;
+}
