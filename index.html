@@ -4,133 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoGo Web - Image Batch Processor</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .section {
-            margin-bottom: 25px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
-        .section-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .position-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .position-button {
-            padding: 10px;
-            text-align: center;
-            background-color: #ecf0f1;
-            border: 2px solid #bdc3c7;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .position-button.selected {
-            background-color: #3498db;
-            color: white;
-            border-color: #2980b9;
-        }
-        .slider-container {
-            margin-top: 10px;
-        }
-        .preview-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        #preview-canvas {
-            max-width: 100%;
-            border: 1px solid #ddd;
-            display: none;
-        }
-        #process-button {
-            background-color: #27ae60;
-            padding: 12px 20px;
-            font-size: 16px;
-            width: 100%;
-            margin-top: 20px;
-        }
-        #process-button:hover {
-            background-color: #2ecc71;
-        }
-        .progress-container {
-            margin-top: 20px;
-            display: none;
-        }
-        progress {
-            width: 100%;
-            height: 25px;
-        }
-        #gallery {
-            margin-top: 30px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
-        .result-image {
-            width: 100%;
-            height: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .file-input-container {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            cursor: pointer;
-        }
-        .file-input-container input[type="file"] {
-            position: absolute;
-            font-size: 100px;
-            right: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-    </style>
+
+    <link href="style.css" rel="stylesheet">
+
 </head>
 <body>
     <div class="container">
@@ -202,6 +78,11 @@
         </div>
         
         <button id="process-button" disabled>Process Images</button>
+        
+        <div class="download-option">
+            <input type="checkbox" id="download-all-checkbox" checked>
+            <label for="download-all-checkbox">Download all images when processing completes</label>
+        </div>
         
         <div class="progress-container">
             <div id="progress-text">Processing...</div>
