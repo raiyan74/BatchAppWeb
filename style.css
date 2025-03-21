@@ -71,10 +71,7 @@ button:hover {
 .slider-container {
     margin-top: 10px;
 }
-.preview-container {
-    margin-top: 20px;
-    text-align: center;
-}
+
 #preview-canvas {
     max-width: 100%;
     border: 1px solid #ddd;
@@ -123,6 +120,32 @@ progress {
     top: 0;
     opacity: 0;
     cursor: pointer;
+}
+
+/* reset button style */
+.reset-container {
+    margin-top: 20px;
+    text-align: center;
+}
+.reset-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#reset-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#reset-button:hover {
+    background-color: #c0392b;
 }
 
 /* Improved checkbox styling */

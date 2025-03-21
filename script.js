@@ -157,7 +157,7 @@ function updatePreview(mainImage) {
         
         // Draw logo if available
         if (logoImage && selectedPosition) {
-            const divisor = 7 - logoSize + 3; // Convert slider value to divisor 
+            const divisor = 8 - logoSize; // Convert slider value to divisor 
             const logoWidth = previewCanvas.width / divisor;
             const logoHeight = (logoImage.height / logoImage.width) * logoWidth;
             
@@ -203,14 +203,17 @@ function checkIfReadyToProcess() {
     }
 }
 
+// Modified the processImages function to clear previous results first
 function processImages() {
     if (selectedImages.length === 0 || !logoImage || !laceImage || !selectedPosition) {
         alert('Please complete all required inputs before processing');
         return;
     }
     
+    // Clear previous results and free memory
     processedImages = [];
-    gallery.innerHTML = '';
+    gallery.innerHTML = ''; // Clear the gallery DOM
+    
     progressContainer.style.display = 'block';
     progressBar.value = 0;
     progressText.textContent = `Processing 0/${selectedImages.length} images...`;
@@ -228,6 +231,9 @@ function processImages() {
                     name: file.name,
                     dataUrl: processedImageDataUrl
                 });
+                
+                // Clear the Image object to help with garbage collection
+                img.src = '';
                 
                 processed++;
                 progressBar.value = (processed / selectedImages.length) * 100;
@@ -252,6 +258,7 @@ function processImages() {
     });
 }
 
+// Modified processImage to better handle canvas cleanup
 function processImage(mainImage) {
     const canvas = document.createElement('canvas');
     canvas.width = mainImage.width;
@@ -263,7 +270,7 @@ function processImage(mainImage) {
     ctx.drawImage(mainImage, 0, 0, canvas.width, canvas.height);
     
     // Draw logo
-    const divisor = 7 - logoSize + 3; // Convert slider value to divisor
+    const divisor = 8 - logoSize; // Using the fixed calculation
     const logoWidth = canvas.width / divisor;
     const logoHeight = (logoImage.height / logoImage.width) * logoWidth;
     
@@ -296,8 +303,16 @@ function processImage(mainImage) {
     ctx.drawImage(laceImage, 0, laceY, laceWidth, laceHeight);
     ctx.globalAlpha = 1.0;
     
-    return canvas.toDataURL('image/jpeg');
+    // Get the data URL
+    const dataURL = canvas.toDataURL('image/jpeg');
+    
+    // Clean up canvas context
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Return the data URL
+    return dataURL;
 }
+
 
 function addImageToGallery(dataUrl, fileName) {
     const container = document.createElement('div');
@@ -372,11 +387,136 @@ function downloadAllProcessedImages() {
             
             // Update the UI
             progressText.textContent = `Completed! ZIP file with ${processedImages.length} images downloaded.`;
+
+            cleanupMemory();
         })
         .catch(function(error) {
             console.error('Error creating ZIP file:', error);
             progressText.textContent = `Error creating ZIP file. See console for details.`;
         });
+
+        cleanupMemory();
+}
+
+
+
+
+// Comprehensive memory cleanup function
+
+// Enhance the cleanupMemory function to better handle gallery download buttons
+
+function cleanupMemory() {
+    // Clear the large data arrays
+    processedImages = [];
+
+    // Reset progress elements
+    if (progressBar) {
+        progressBar.value = 0;
+    }
+    if (progressText) {
+        progressText.textContent = 'Processing...';
+    }
+    if (progressContainer) {
+        progressContainer.style.display = 'none';
+    }
+    
+    // Clear the canvas preview if it exists
+    if (previewCanvas && previewCanvas.getContext) {
+        const ctx = previewCanvas.getContext('2d');
+        ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+    }
+    
+    // Handle gallery cleanup - this is the key part
+    if (gallery) {
+        // First nullify all data URLs in images and links to help garbage collection
+        const galleryImages = gallery.querySelectorAll('.result-image');
+        galleryImages.forEach(img => {
+            if (img.src && img.src.startsWith('data:')) {
+                img.src = '';
+            }
+        });
+        
+        const downloadLinks = gallery.querySelectorAll('a');
+        downloadLinks.forEach(link => {
+            if (link.href && link.href.startsWith('data:')) {
+                link.href = '#';
+                // Remove event listeners by cloning and replacing
+                const newLink = link.cloneNode(true);
+                if (link.parentNode) {
+                    link.parentNode.replaceChild(newLink, link);
+                }
+            }
+        });
+        
+        // Then completely clear the gallery
+        gallery.innerHTML = '';
+    }
+    
+    // Remove references to any temporary canvases that might have been created
+    const tempCanvases = document.querySelectorAll('canvas:not(#preview-canvas)');
+    tempCanvases.forEach(canvas => {
+        if (canvas && canvas.parentNode) {
+            canvas.parentNode.removeChild(canvas);
+        }
+    });
+    
+    // Run garbage collection if available
+    if (window.gc) {
+        window.gc();
+    } else if (window.CollectGarbage) {
+        window.CollectGarbage();
+    }
+    
+    console.log('Memory cleanup completed');
+}
+
+
+
+
+
+// Add a reset function to clear inputs and state
+
+// Enhanced resetApp function that cleans up the download buttons too
+function resetApp() {
+    // First, clean up memory to release references and data URLs
+    cleanupMemory();
+    
+    // Clear input fields
+    imageInput.value = '';
+    logoInput.value = '';
+    laceInput.value = '';
+    
+    // Reset UI elements
+    imageCountEl.textContent = '';
+    logoNameEl.textContent = '';
+    laceNameEl.textContent = '';
+    
+    // Clear position selection
+    positionButtons.forEach(btn => btn.classList.remove('selected'));
+    selectedPosition = null;
+    positionValueEl.textContent = 'Selected Position: None';
+    
+    // Reset sliders to default
+    logoSizeSlider.value = 3;
+    logoSize = 3;
+    logoSizeValueEl.textContent = 'Logo Size: 3';
+    
+    laceOpacitySlider.value = 30;
+    laceOpacity = 30;
+    laceOpacityValueEl.textContent = 'Lace Opacity: 30%';
+    
+    // Hide preview
+    previewCanvas.style.display = 'none';
+    
+    // Disable process button
+    processButton.disabled = true;
+    
+    // Reset progress elements
+    progressBar.value = 0;
+    progressText.textContent = 'Processing...';
+    progressContainer.style.display = 'none';
+    
+    console.log('App has been reset');
 }
 
 // Add a listener for the downloadAllCheckbox if it exists
@@ -386,4 +526,14 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Download checkbox changed to:', this.checked);
         });
     }
+
+    // Add event listener for reset button
+    const resetButton = document.getElementById('reset-button');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            cleanupMemory();
+            console.log('Manual memory cleanup triggered');
+        });
+    }
 });
+
