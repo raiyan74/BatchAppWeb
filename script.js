@@ -27,6 +27,7 @@ const progressContainer = document.querySelector('.progress-container');
 const progressBar = document.getElementById('progress-bar');
 const progressText = document.getElementById('progress-text');
 const gallery = document.getElementById('gallery');
+const resetButton = document.getElementById('reset-button');
 
 // Event Listeners
 imageInput.addEventListener('change', handleImageSelection);
@@ -68,6 +69,7 @@ laceOpacitySlider.addEventListener('input', () => {
     updatePreview();
 });
 
+//Proces Images Button
 processButton.addEventListener('click', processImages);
 
 // Functions
@@ -195,8 +197,14 @@ function updatePreview(mainImage) {
     }
 }
 
+
+//cenrtalizing logic for checking if all inputs are filled
+function hasRequiredInputs() {
+    return selectedImages.length > 0 && logoImage && laceImage && selectedPosition;
+}
+
 function checkIfReadyToProcess() {
-    if (selectedImages.length > 0 && logoImage && laceImage && selectedPosition) {
+    if (!hasRequiredInputs) {
         processButton.disabled = false;
     } else {
         processButton.disabled = true;
@@ -205,7 +213,7 @@ function checkIfReadyToProcess() {
 
 // Modified the processImages function to clear previous results first
 function processImages() {
-    if (selectedImages.length === 0 || !logoImage || !laceImage || !selectedPosition) {
+    if (!hasRequiredInputs()) {
         alert('Please complete all required inputs before processing');
         return;
     }
@@ -511,11 +519,6 @@ function resetApp() {
     // Disable process button
     processButton.disabled = true;
     
-    // Reset progress elements
-    progressBar.value = 0;
-    progressText.textContent = 'Processing...';
-    progressContainer.style.display = 'none';
-    
     console.log('App has been reset');
 }
 
@@ -531,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetButton = document.getElementById('reset-button');
     if (resetButton) {
         resetButton.addEventListener('click', function() {
-            cleanupMemory();
+            resetApp();
             console.log('Manual memory cleanup triggered');
         });
     }

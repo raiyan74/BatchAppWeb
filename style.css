@@ -13,6 +13,17 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.centered-logo {
+    height: 50px; /* Using the original size from the filename */
+}
+
+
 h1 {
     color: #81c4ff;
     text-align: center;
