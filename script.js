@@ -29,50 +29,9 @@ const progressText = document.getElementById('progress-text');
 const gallery = document.getElementById('gallery');
 const resetButton = document.getElementById('reset-button');
 
-// Event Listeners
-imageInput.addEventListener('change', handleImageSelection);
-logoInput.addEventListener('change', handleLogoSelection);
-laceInput.addEventListener('change', handleLaceSelection);
-
-positionButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        positionButtons.forEach(btn => btn.classList.remove('selected'));
-        button.classList.add('selected');
-        selectedPosition = button.getAttribute('data-position');
-        
-        let horizontalValue = 5;
-        let verticalValue = 5;
-        
-        if (selectedPosition === 'top-right' || selectedPosition === 'bottom-right') {
-            horizontalValue = 80;
-        }
-        
-        if (selectedPosition === 'bottom-left' || selectedPosition === 'bottom-right') {
-            verticalValue = 90;
-        }
-        
-        positionValueEl.textContent = `Selected Position: ${selectedPosition} (${horizontalValue}, ${verticalValue})`;
-        updatePreview();
-        checkIfReadyToProcess();
-    });
-});
-
-logoSizeSlider.addEventListener('input', () => {
-    logoSize = parseInt(logoSizeSlider.value);
-    logoSizeValueEl.textContent = `Logo Size: ${logoSize}`;
-    updatePreview();
-});
-
-laceOpacitySlider.addEventListener('input', () => {
-    laceOpacity = parseInt(laceOpacitySlider.value);
-    laceOpacityValueEl.textContent = `Lace Opacity: ${laceOpacity}%`;
-    updatePreview();
-});
-
-//Proces Images Button
-processButton.addEventListener('click', processImages);
-
 // Functions
+
+//images
 function handleImageSelection(e) {
     selectedImages = Array.from(e.target.files);
     imageCountEl.textContent = `Selected ${selectedImages.length} image(s)`;
@@ -84,6 +43,7 @@ function handleImageSelection(e) {
     checkIfReadyToProcess();
 }
 
+//logo
 function handleLogoSelection(e) {
     if (e.target.files.length > 0) {
         const file = e.target.files[0];
@@ -104,6 +64,7 @@ function handleLogoSelection(e) {
     checkIfReadyToProcess();
 }
 
+//lace
 function handleLaceSelection(e) {
     if (e.target.files.length > 0) {
         const file = e.target.files[0];
@@ -122,6 +83,47 @@ function handleLaceSelection(e) {
     }
     
     checkIfReadyToProcess();
+}
+
+//logoPosition
+function handlePositionSelection() {
+    positionButtons.forEach(btn => btn.classList.remove('selected'));
+    this.classList.add('selected');
+    selectedPosition = this.getAttribute('data-position');
+    
+    let horizontalValue = 5;
+    let verticalValue = 5;
+    
+    if (selectedPosition === 'top-right' || selectedPosition === 'bottom-right') {
+        horizontalValue = 80;
+    }
+    
+    if (selectedPosition === 'bottom-left' || selectedPosition === 'bottom-right') {
+        verticalValue = 90;
+    }
+    
+    positionValueEl.textContent = `Selected Position: ${selectedPosition} (${horizontalValue}, ${verticalValue})`;
+    updatePreview();
+    checkIfReadyToProcess();
+}
+
+//logo size
+function handleLogoSizeChange() {
+    logoSize = parseInt(this.value);
+    logoSizeValueEl.textContent = `Logo Size: ${logoSize}`;
+    updatePreview();
+}
+
+//laceOpacity
+function handleLaceOpacityChange() {
+    laceOpacity = parseInt(this.value);
+    laceOpacityValueEl.textContent = `Lace Opacity: ${laceOpacity}%`;
+    updatePreview();
+}
+
+//download checkbox
+function handleDownloadCheckboxChange() {
+    console.log('Download checkbox changed to:', this.checked);
 }
 
 function loadImageForPreview(file) {
@@ -196,8 +198,6 @@ function updatePreview(mainImage) {
         }
     }
 }
-
-
 //cenrtalizing logic for checking if all inputs are filled
 function hasRequiredInputs() {
     return selectedImages.length > 0 && logoImage && laceImage && selectedPosition;
@@ -321,7 +321,6 @@ function processImage(mainImage) {
     return dataURL;
 }
 
-
 function addImageToGallery(dataUrl, fileName) {
     const container = document.createElement('div');
     container.style.position = 'relative';
@@ -405,14 +404,9 @@ function downloadAllProcessedImages() {
 
         cleanupMemory();
 }
-
-
-
-
 // Comprehensive memory cleanup function
 
 // Enhance the cleanupMemory function to better handle gallery download buttons
-
 function cleanupMemory() {
     // Clear the large data arrays
     processedImages = [];
@@ -478,10 +472,6 @@ function cleanupMemory() {
     console.log('Memory cleanup completed');
 }
 
-
-
-
-
 // Add a reset function to clear inputs and state
 
 // Enhanced resetApp function that cleans up the download buttons too
@@ -522,21 +512,36 @@ function resetApp() {
     console.log('App has been reset');
 }
 
-// Add a listener for the downloadAllCheckbox if it exists
-document.addEventListener('DOMContentLoaded', function() {
-    if (downloadAllCheckbox) {
-        downloadAllCheckbox.addEventListener('change', function() {
-            console.log('Download checkbox changed to:', this.checked);
-        });
-    }
+// Initialize the application when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', setupEventListeners);
 
-    // Add event listener for reset button
-    const resetButton = document.getElementById('reset-button');
-    if (resetButton) {
-        resetButton.addEventListener('click', function() {
-            resetApp();
-            console.log('Manual memory cleanup triggered');
-        });
+// Setup all event listeners when the DOM is fully loaded
+function setupEventListeners() {
+    // File input event listeners
+    imageInput.addEventListener('change', handleImageSelection);
+    logoInput.addEventListener('change', handleLogoSelection);
+    laceInput.addEventListener('change', handleLaceSelection);
+    
+    // Position button event listeners
+    positionButtons.forEach(button => {
+        button.addEventListener('click', handlePositionSelection);
+    });
+    
+    // Slider event listeners
+    logoSizeSlider.addEventListener('input', handleLogoSizeChange);
+    laceOpacitySlider.addEventListener('input', handleLaceOpacityChange);
+    
+    // Button event listeners
+    processButton.addEventListener('click', processImages);
+    
+    // Checkbox event listeners
+    if (downloadAllCheckbox) {
+        downloadAllCheckbox.addEventListener('change', handleDownloadCheckboxChange);
     }
-});
+    
+    // Reset button event listener
+    if (resetButton) {
+        resetButton.addEventListener('click', resetApp);
+    }
+}
 
