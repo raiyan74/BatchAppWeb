@@ -30,6 +30,26 @@ h1 {
     margin-bottom: 30px;
 }
 
+/*footer styles*/
+footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+footer div {
+    margin: 5px 0;
+}
+
+footer p {
+    margin: 0;
+    color: #81c4ff; /* Using the same blue color as your headings */
+}
+
 .section {
     margin-bottom: 25px;
     padding: 15px;
