@@ -204,7 +204,7 @@ function hasRequiredInputs() {
 }
 
 function checkIfReadyToProcess() {
-    if (!hasRequiredInputs) {
+    if (hasRequiredInputs()) {
         processButton.disabled = false;
     } else {
         processButton.disabled = true;
